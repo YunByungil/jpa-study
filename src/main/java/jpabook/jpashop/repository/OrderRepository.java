@@ -61,7 +61,7 @@ public class OrderRepository {
         if (StringUtils.hasText(orderSearch.getMemberName())) {
             query = query.setParameter("name", orderSearch.getMemberName());
         }
-
+        System.out.println("jqpl = " + jqpl);
         return query.getResultList();
 
 //        return em.createQuery("select o from Order o join o.member m" +
