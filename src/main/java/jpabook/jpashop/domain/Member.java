@@ -18,7 +18,6 @@ public class Member {
 
     private String name;
     @Embedded
-
     private Address address;
 
     @JsonIgnore
