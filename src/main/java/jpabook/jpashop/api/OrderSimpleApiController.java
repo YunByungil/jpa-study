@@ -77,7 +77,7 @@ public class OrderSimpleApiController {
     }
 
     /**
-     * 이 모든 것을 다 해결할 수 있는 fetch join 사용해보자
+     * 이 모든 것을 다 해결할 수 있는 fetch join 사용해보자 (복습)
      */
     @GetMapping("/api/v3/simple-orders")
     public List<SimpleOrderDto> ordersV3() {
