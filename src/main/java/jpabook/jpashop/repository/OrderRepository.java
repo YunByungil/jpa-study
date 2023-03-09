@@ -104,4 +104,28 @@ public class OrderRepository {
     }
 
 
+    /**
+     * 오더는 2개, 오더아이템은 4개 데이터가 뻥튀기 된다.
+     * -> distinct 추가하면 뻥튀기 방지
+     * 근데 dateBase는 정말 똑같아야 중복제거가 된다
+     * JPA1 Book, JPA2 Book 2개 있기 때문에 DB에서는 중복 제거를 할 수 없다.
+     *
+     * 근데 JPA에서는 distinct를 사용하면 Order를 갖고 올 때 Order가 같은 아이디면 중복을 제거해주기 때문에 뻥튀기 막을 수 있다.
+     * "컬렉션 페치 조인 이거의 단점" => 페이징이 불가능하다!!!!
+     * 1 : N을 페치 조인 하는 순간 페이징 불가능!!!! (DB 내에서는 뻥튀기가 되기 때문에 불가능 한 것임)
+     * 쿼리를 살펴보면 limit 자체가 없다.
+     * 2023-03-09 20:22:36.336  WARN 21044 --- [nio-8080-exec-2] o.h.h.internal.ast.QueryTranslatorImpl   : HHH000104: firstResult/maxResults specified with collection fetch; applying in memory!
+     * 컬렉션 페치 조인은 1개만 사용할 수 있다. 둘 이상에 페치 조인 사용하면 안 된다!! => 데이터 부정확 위험있음.
+     */
+    public List<Order> findAllWithItem() {
+        return em.createQuery(
+                    "select distinct o from Order o" +
+                            " join fetch o.member m" +
+                            " join fetch o.delivery d" +
+                            " join fetch o.orderItems oi" +
+                            " join fetch oi.item", Order.class)
+                .setFirstResult(0)
+                .setMaxResults(100)
+                .getResultList();
+    }
 }
