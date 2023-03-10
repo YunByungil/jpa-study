@@ -1,9 +1,3 @@
-buildscript {
-	ext {
-		queryDslVersion = "5.0.0";
-	}
-}
-
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.7'
@@ -14,6 +8,8 @@ plugins {
 group = 'jpabook'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
+
+ext["hibernate.version"] = "5.6.5.Final"
 
 configurations {
 	compileOnly {
@@ -40,34 +36,16 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-	/* 10-4. querydsl dependencies 추가 */
-	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
-	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
+	//Querydsl 추가
+	implementation 'com.querydsl:querydsl-jpa'
+	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
-/* 10-5. querydsl에서 사용할 경로 지정*/
-def querydslDir = "src/main/generated"
-
-/* 10-6. JPA사용 여부와 사용할 경로를 지정*/
-querydsl {
-	jpa = true
-	querydslSourcesDir = querydslDir
-}
-
-/* 10-7. build시 사용할 SourceSet 추가 */
-sourceSets {
-	main.java.srcDir querydslDir
-}
-
-/* 10-8. querydsl이 complieClasspath를 상속하도록 설정 */
-configurations {
-	querydsl.extendsFrom compileClasspath
-}
-
-/* 10-9. querydsl 컴파일시 사용할 옵션 설정 */
-compileQuerydsl {
-	options.annotationProcessorPath = configurations.querydsl
+clean {
+	delete file('src/main/generated')
 }
