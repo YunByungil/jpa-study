@@ -81,4 +81,20 @@ public class OrderQueryRepository {
     }
 
 
+    /**
+     * 페이징 불가능, JPA에서 DTO로 직접 조회, 플랫 데이터 최적화
+     * 장점: 쿼리 1번
+     * 단점: 애플리케이션에서 추가 작업이 크다, 페이징 불가능
+     * @return
+     */
+    public List<OrderFlatDto> findAllByDto_flat() {
+        return em.createQuery(
+                "select new jpabook.jpashop.repository.order.query.OrderFlatDto(o.id, m.name, o.orderDate, o.status, d.address, i.name, oi.orderPrice, oi.count)" +
+                        " from Order o" +
+                        " join o.member m" +
+                        " join o.delivery d" +
+                        " join o.orderItems oi" +
+                        " join oi.item i", OrderFlatDto.class)
+                .getResultList();
+    }
 }
